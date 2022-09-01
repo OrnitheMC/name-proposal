@@ -27,7 +27,7 @@ public class NameProposalServiceEnimgaPlugin implements EnigmaPlugin {
 
 	@Override
 	public void init(EnigmaPluginContext ctx) {
-		ctx.registerService(ID_PREFIX + "intermediary_obfuscation_test", ObfuscationTestService.TYPE, IntermediaryObfuscationTestService::new);
+		ctx.registerService(ID_PREFIX + "calamus_obfuscation_test", ObfuscationTestService.TYPE, CalamusObfuscationTestService::new);
 
 		EnimgaNameProposalService service = new EnimgaNameProposalService();
 		ctx.registerService(ID_PREFIX + "jar_indexer", JarIndexerService.TYPE, ctx1 -> service);

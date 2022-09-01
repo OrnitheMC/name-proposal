@@ -23,14 +23,14 @@ import cuchaz.enigma.translation.representation.entry.Entry;
 import cuchaz.enigma.translation.representation.entry.FieldEntry;
 import cuchaz.enigma.translation.representation.entry.MethodEntry;
 
-public class IntermediaryObfuscationTestService implements ObfuscationTestService {
+public class CalamusObfuscationTestService implements ObfuscationTestService {
 	private final String prefix, classPrefix, classPackagePrefix, fieldPrefix, methodPrefix, componentPrefix;
 
-	public IntermediaryObfuscationTestService(EnigmaServiceContext<cuchaz.enigma.api.service.ObfuscationTestService> context) {
+	public CalamusObfuscationTestService(EnigmaServiceContext<cuchaz.enigma.api.service.ObfuscationTestService> context) {
 		this.prefix = context.getArgument("package").orElse("net/minecraft") + "/";
-		this.classPrefix = context.getArgument("classPrefix").orElse("class_");
-		this.fieldPrefix = context.getArgument("fieldPrefix").orElse("field_");
-		this.methodPrefix = context.getArgument("methodPrefix").orElse("method_");
+		this.classPrefix = context.getArgument("classPrefix").orElse("C_");
+		this.fieldPrefix = context.getArgument("fieldPrefix").orElse("f_");
+		this.methodPrefix = context.getArgument("methodPrefix").orElse("m_");
 		this.componentPrefix = context.getArgument("componentPrefix").orElse("comp_");
 
 		this.classPackagePrefix = this.prefix + this.classPrefix;

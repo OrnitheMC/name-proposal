@@ -38,18 +38,18 @@ import net.fabricmc.mappingio.tree.MappingTree;
 import net.fabricmc.mappingio.tree.MemoryMappingTree;
 
 public class MappingNameCompleter {
-	// <intermediaryJar> <inputYarnMappings> <inputIntermediaryMappings> <outputYarnMappings>
+	// <calamusJar> <inputFeatherMappings> <inputCalamusMappings> <outputFeatherMappings>
 	public static void main(String[] args) throws IOException {
 		completeNames(Paths.get(args[0]), Paths.get(args[1]), Paths.get(args[2]), Paths.get(args[3]));
 	}
 
-	public static void completeNames(Path intermediaryJar, Path inputYarnMappings, Path inputIntermediaryMappings, Path outputYarnMappings) throws IOException {
+	public static void completeNames(Path calamusJar, Path inputFeatherMappings, Path inputCalamusMappings, Path outputFeatherMappings) throws IOException {
 		NameFinder nameFinder = new NameFinder();
 
-		acceptJar(nameFinder, intermediaryJar);
+		acceptJar(nameFinder, calamusJar);
 
-		// We need the full intermediary mappings on their own to lookup the record component's root fields/methods.
-		nameFinder.acceptIntermediaryMappings(readMappings(inputIntermediaryMappings));
+		// We need the full calamus mappings on their own to lookup the record component's root fields/methods.
+		nameFinder.acceptCalamusMappings(readMappings(inputCalamusMappings));
 
 		Map<MappingEntry, String> fieldNames = nameFinder.getFieldNames();
 		Map<MappingEntry, String> methodNames = nameFinder.getMethodNames();
@@ -59,25 +59,25 @@ public class MappingNameCompleter {
 		System.out.printf("Found %d method names%n", methodNames.size());
 		System.out.printf("Found %d record names%n", recordNames.size());
 
-		final MemoryMappingTree yarn = readMappings(inputYarnMappings);
-		final int yarnIntermediaryNs = yarn.getNamespaceId("intermediary");
-		final int yarnNamedNs = yarn.getNamespaceId("named");
+		final MemoryMappingTree feather = readMappings(inputFeatherMappings);
+		final int featherCalamusNs = feather.getNamespaceId("calamus");
+		final int featherNamedNs = feather.getNamespaceId("named");
 
 		for (Map.Entry<MappingEntry, String> entry : fieldNames.entrySet()) {
 			MappingEntry mappingEntry = entry.getKey();
 
 			// Ensure there is a class mapping for this
-			yarn.visitClass(mappingEntry.owner());
+			feather.visitClass(mappingEntry.owner());
 
-			MemoryMappingTree.ClassMapping classMapping = yarn.getClass(mappingEntry.owner(), yarnIntermediaryNs);
+			MemoryMappingTree.ClassMapping classMapping = feather.getClass(mappingEntry.owner(), featherCalamusNs);
 
-			yarn.visitField(mappingEntry.name(), mappingEntry.desc());
-			MappingTree.FieldMapping fieldMapping = Objects.requireNonNull(classMapping.getField(mappingEntry.name(), mappingEntry.desc(), yarnIntermediaryNs), "Could not find field");
-			String yarnFieldName = fieldMapping.getName(yarnNamedNs);
+			feather.visitField(mappingEntry.name(), mappingEntry.desc());
+			MappingTree.FieldMapping fieldMapping = Objects.requireNonNull(classMapping.getField(mappingEntry.name(), mappingEntry.desc(), featherCalamusNs), "Could not find field");
+			String featherFieldName = fieldMapping.getName(featherNamedNs);
 
-			if (yarnFieldName == null || yarnFieldName.startsWith("field_") || yarnFieldName.startsWith("comp_")) {
+			if (featherFieldName == null || featherFieldName.startsWith("f_") || featherFieldName.startsWith("comp_")) {
 				// Set a new dst name if it doesn't have one, or matches intermediary
-				yarn.visitDstName(MappedElementKind.FIELD, yarnNamedNs, entry.getValue());
+				feather.visitDstName(MappedElementKind.FIELD, featherNamedNs, entry.getValue());
 			}
 		}
 
@@ -85,24 +85,24 @@ public class MappingNameCompleter {
 			MappingEntry mappingEntry = entry.getKey();
 
 			// Ensure there is a class mapping for this
-			yarn.visitClass(mappingEntry.owner());
+			feather.visitClass(mappingEntry.owner());
 
-			MemoryMappingTree.ClassMapping classMapping = yarn.getClass(mappingEntry.owner(), yarnIntermediaryNs);
+			MemoryMappingTree.ClassMapping classMapping = feather.getClass(mappingEntry.owner(), featherCalamusNs);
 
-			yarn.visitMethod(mappingEntry.name(), mappingEntry.desc());
-			MappingTree.MethodMapping methodMapping = Objects.requireNonNull(classMapping.getMethod(mappingEntry.name(), mappingEntry.desc(), yarnIntermediaryNs), "Could not find method");
-			String yarnFieldName = methodMapping.getName(yarnNamedNs);
+			feather.visitMethod(mappingEntry.name(), mappingEntry.desc());
+			MappingTree.MethodMapping methodMapping = Objects.requireNonNull(classMapping.getMethod(mappingEntry.name(), mappingEntry.desc(), featherCalamusNs), "Could not find method");
+			String featherMethodName = methodMapping.getName(featherNamedNs);
 
-			if (yarnFieldName == null || yarnFieldName.startsWith("method_") || yarnFieldName.startsWith("comp_")) {
+			if (featherMethodName == null || featherMethodName.startsWith("m_") || featherMethodName.startsWith("comp_")) {
 				// Set a new dst name if it doesn't have one, or matches intermediary
-				yarn.visitDstName(MappedElementKind.METHOD, yarnNamedNs, entry.getValue());
+				feather.visitDstName(MappedElementKind.METHOD, featherNamedNs, entry.getValue());
 			}
 		}
 
-		inheritMappedNamesOfEnclosingClasses(yarn);
+		inheritMappedNamesOfEnclosingClasses(feather);
 
-		try (MappingWriter mappingWriter = MappingWriter.create(outputYarnMappings, MappingFormat.TINY_2)) {
-			yarn.accept(mappingWriter);
+		try (MappingWriter mappingWriter = MappingWriter.create(outputFeatherMappings, MappingFormat.TINY_2)) {
+			feather.accept(mappingWriter);
 		}
 	}
 

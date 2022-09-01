@@ -44,12 +44,12 @@ public class NameFinder {
 		}
 	}
 
-	public void acceptIntermediaryMappings(MemoryMappingTree mappingTree) {
+	public void acceptCalamusMappings(MemoryMappingTree mappingTree) {
 		if (recordNames.isEmpty()) {
 			return;
 		}
 
-		final int intermediaryId = mappingTree.getNamespaceId("intermediary");
+		final int calamusId = mappingTree.getNamespaceId("calamus");
 
 		for (Map.Entry<String, String> entry : recordNames.entrySet()) {
 			boolean foundMethod = false;
@@ -57,16 +57,16 @@ public class NameFinder {
 
 			for (MappingTree.ClassMapping classMapping : mappingTree.getClasses()) {
 				for (MappingTree.FieldMapping fieldMapping : classMapping.getFields()) {
-					if (fieldMapping.getName(intermediaryId).equals(entry.getKey())) {
-						MappingEntry fieldEntry = new MappingEntry(classMapping.getName(intermediaryId), fieldMapping.getName(intermediaryId), fieldMapping.getDesc(intermediaryId));
+					if (fieldMapping.getName(calamusId).equals(entry.getKey())) {
+						MappingEntry fieldEntry = new MappingEntry(classMapping.getName(calamusId), fieldMapping.getName(calamusId), fieldMapping.getDesc(calamusId));
 						recordFieldNames.put(fieldEntry, entry.getValue());
 						foundField = true;
 					}
 				}
 
 				for (MappingTree.MethodMapping methodMapping : classMapping.getMethods()) {
-					if (methodMapping.getName(intermediaryId).equals(entry.getKey())) {
-						MappingEntry fieldEntry = new MappingEntry(classMapping.getName(intermediaryId), methodMapping.getName(intermediaryId), methodMapping.getDesc(intermediaryId));
+					if (methodMapping.getName(calamusId).equals(entry.getKey())) {
+						MappingEntry fieldEntry = new MappingEntry(classMapping.getName(calamusId), methodMapping.getName(calamusId), methodMapping.getDesc(calamusId));
 						recordMethodNames.put(fieldEntry, entry.getValue());
 						foundMethod = true;
 					}
