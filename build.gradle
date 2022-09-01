@@ -63,8 +63,6 @@ publishing {
 	}
 
 	repositories {
-		mavenLocal()
-
 		if (ENV.MAVEN_URL) {
 			repositories.maven {
 				name "fabric"
