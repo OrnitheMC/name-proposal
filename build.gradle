@@ -8,7 +8,7 @@ plugins {
 sourceCompatibility = 16
 targetCompatibility = 16
 
-group 'net.fabricmc'
+group 'net.ornithemc'
 archivesBaseName = 'name-proposal'
 
 def ENV = System.getenv()
