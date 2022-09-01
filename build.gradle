@@ -16,6 +16,10 @@ version '0.1.5' + (ENV.GITHUB_ACTIONS ? "" : "+local")
 
 repositories {
     maven {
+        name = 'Ornithe'
+        url = 'https://maven.ornithemc.net/releases'
+    }
+    maven {
         name = 'Fabric'
         url = 'https://maven.fabricmc.net/'
     }
